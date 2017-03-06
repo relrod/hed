@@ -18,9 +18,9 @@ loop file state = do
   inp <- getLine
   case parseOnly parseInput (B.pack inp) of
     Left err -> putStrLn "?"
-    Right (PrintLineRange a b) ->
+    Right (PrintLineRange (LineRange a b)) ->
       mapM_ (\x -> B.putStrLn (S.index (contents file) x)) [a..b]
-    Right (PrintLineRangeWithNumbers a b) ->
+    Right (PrintLineRangeWithNumbers (LineRange a b)) ->
       mapM_ (\x ->
                B.putStrLn ((B.pack . show $ x + 1) <>
                            B.pack "\t" <> (S.index (contents file) x))) [a..b]

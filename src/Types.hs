@@ -3,9 +3,11 @@ module Types where
 import qualified Data.ByteString.Char8 as B
 import qualified Data.Sequence as S
 
+data LineRange = LineRange Int Int deriving (Eq, Ord, Show)
+
 data InputLine =
-    PrintLineRange Int Int
-  | PrintLineRangeWithNumbers Int Int
+    PrintLineRange LineRange
+  | PrintLineRangeWithNumbers LineRange
   | Print
   | Write
   | WriteFilename String
