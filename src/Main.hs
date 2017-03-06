@@ -34,6 +34,12 @@ loop file state = do
     Right (WriteFilename f) ->
       U.writeFile (file { filename = Just f }) >>= print
     Right Quit -> exitSuccess -- TODO: ? on unsaved changes
+    Right (Number n) ->
+      case S.lookup n (contents file) of
+        Nothing -> putStrLn "?"
+        Just line -> do
+          B.putStrLn line
+          loop file (state { lineNumber = n })
   loop file state
 
 initialState :: EditorState

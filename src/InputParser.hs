@@ -52,11 +52,15 @@ writeFilename = do
 quit :: Parser InputLine
 quit = char 'q' *> return Quit
 
+changeLine :: Parser InputLine
+changeLine = Number <$> (read <$> many digit)
+
 parseInput :: Parser InputLine
 parseInput =
   choice [ printCurrent
          , printLines
          , printLinesWithNumbers
+         , changeLine
          , writeFilename
          , write
          , quit

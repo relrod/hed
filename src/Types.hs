@@ -6,11 +6,11 @@ import qualified Data.Sequence as S
 data InputLine =
     PrintLineRange Int Int
   | PrintLineRangeWithNumbers Int Int
+  | Print
   | Write
   | WriteFilename String
   | Quit
   | Number Int
-  | Print
   deriving (Eq, Ord, Show)
 
 data FileInfo =
