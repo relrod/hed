@@ -16,3 +16,19 @@ writeFile file =
     case filename file of
       Nothing -> return Nothing
       Just f -> BL.writeFile f toBL >> return (Just (BL.length toBL))
+
+insertSeqAt :: S.Seq a -> Int -> S.Seq a -> S.Seq a
+insertSeqAt orig idx new =
+  case S.viewl new of
+    S.EmptyL -> orig
+    a S.:< new' ->
+      insertSeqAt (S.insertAt idx a orig) (idx + 1) new'
+
+grabMultiline :: IO (S.Seq B.ByteString)
+grabMultiline = grabMultiline' (S.fromList [])
+  where
+    grabMultiline' acc = do
+      inp <- B.getLine
+      if inp == B.pack "."
+        then return acc
+        else grabMultiline' (acc S.|> inp)

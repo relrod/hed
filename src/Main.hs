@@ -40,10 +40,18 @@ loop file state = do
         Just line -> do
           B.putStrLn line
           loop file (state { lineNumber = n })
+    Right Append -> do
+      newLines <- U.grabMultiline
+      let contents' = U.insertSeqAt (contents file) (lineNumber state) newLines
+          file' = file { contents = contents' }
+          state' = state { lineNumber = lineNumber state + S.length newLines - 1
+                         , editorMode = Command
+                         }
+      loop file' state'
   loop file state
 
 initialState :: EditorState
-initialState = EditorState Command 1
+initialState = EditorState Command 0
 
 main :: IO ()
 main = do

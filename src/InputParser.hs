@@ -53,7 +53,12 @@ quit :: Parser InputLine
 quit = char 'q' *> return Quit
 
 changeLine :: Parser InputLine
-changeLine = Number <$> (read <$> many digit)
+changeLine = do
+  nr <- read <$> many1 digit
+  return (Number (nr - 1))
+
+append :: Parser InputLine
+append = char 'a' *> return Append
 
 parseInput :: Parser InputLine
 parseInput =
@@ -64,4 +69,5 @@ parseInput =
          , writeFilename
          , write
          , quit
+         , append
          ]

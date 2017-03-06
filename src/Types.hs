@@ -11,6 +11,7 @@ data InputLine =
   | WriteFilename String
   | Quit
   | Number Int
+  | Append
   deriving (Eq, Ord, Show)
 
 data FileInfo =
