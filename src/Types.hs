@@ -9,10 +9,23 @@ data InputLine =
   | Write
   | WriteFilename String
   | Quit
+  | Number Int
+  | Print
   deriving (Eq, Ord, Show)
 
 data FileInfo =
   FileInfo {
     filename :: Maybe String
   , contents :: S.Seq B.ByteString
+  } deriving (Eq, Ord, Show)
+
+data EditorMode =
+    Insert
+  | Command
+  deriving (Eq, Ord, Show)
+
+data EditorState =
+  EditorState {
+    editorMode :: EditorMode
+  , lineNumber :: Int
   } deriving (Eq, Ord, Show)

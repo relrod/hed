@@ -36,6 +36,9 @@ printLinesWithNumbers :: Parser InputLine
 printLinesWithNumbers =
   (printLineNumberRangeWithNumbers <|> printLineNumberWithNumber) <* char 'n'
 
+printCurrent :: Parser InputLine
+printCurrent = char 'p' *> return Print
+
 write :: Parser InputLine
 write = char 'w' *> return Write
 
@@ -51,7 +54,8 @@ quit = char 'q' *> return Quit
 
 parseInput :: Parser InputLine
 parseInput =
-  choice [ printLines
+  choice [ printCurrent
+         , printLines
          , printLinesWithNumbers
          , writeFilename
          , write

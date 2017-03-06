@@ -12,8 +12,8 @@ import InputParser
 import Types
 import qualified Utility as U
 
-loop :: FileInfo -> IO ()
-loop file = do
+loop :: FileInfo -> EditorState -> IO ()
+loop file state = do
   inp <- getLine
   case parseOnly parseInput (B.pack inp) of
     Left err -> putStrLn "?"
@@ -23,6 +23,10 @@ loop file = do
       mapM_ (\x ->
                B.putStrLn ((B.pack . show $ x + 1) <>
                            B.pack "\t" <> (S.index (contents file) x))) [a..b]
+    Right Print ->
+      case S.lookup (lineNumber state) (contents file) of
+        Nothing -> putStrLn "?" -- Should never happen, maybe?
+        Just line -> B.putStrLn line
     Right Write ->
       case filename file of
         Nothing -> putStrLn "?"
@@ -30,7 +34,10 @@ loop file = do
     Right (WriteFilename f) ->
       U.writeFile (file { filename = Just f }) >>= print
     Right Quit -> exitSuccess -- TODO: ? on unsaved changes
-  loop file
+  loop file state
+
+initialState :: EditorState
+initialState = EditorState Command 1
 
 main :: IO ()
 main = do
@@ -43,4 +50,4 @@ main = do
     Nothing -> return mempty
   print (B.length file)
   let file' = S.fromList . B.lines $ file
-  loop (FileInfo filename file')
+  loop (FileInfo filename file') initialState
