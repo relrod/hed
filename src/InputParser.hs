@@ -36,8 +36,20 @@ printLinesWithNumbers :: Parser InputLine
 printLinesWithNumbers =
   (printLineNumberRangeWithNumbers <|> printLineNumberWithNumber) <* char 'n'
 
+write :: Parser InputLine
+write = char 'w' *> return Write
+
+writeFilename :: Parser InputLine
+writeFilename = do
+  char 'w'
+  many1 (char ' ')
+  filename <- many1 (notChar ' ')
+  return (WriteFilename filename)
+
 parseInput :: Parser InputLine
 parseInput =
   choice [ printLines
          , printLinesWithNumbers
+         , writeFilename
+         , write
          ]
