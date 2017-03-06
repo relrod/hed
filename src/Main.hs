@@ -59,6 +59,12 @@ loop file state = do
           contents' = U.deleteSeqRange (contents file) line
           file' = file { contents = contents' }
       loop file' state
+    Right Change -> do
+      let x = S.deleteAt (lineNumber state) (contents file)
+      newLines <- U.grabMultiline
+      let contents' = U.insertSeqAt x (lineNumber state) newLines
+          file' = file { contents = contents' }
+      loop file' state
   loop file state
 
 initialState :: EditorState

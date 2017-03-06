@@ -61,6 +61,9 @@ changeLine = do
 append :: Parser InputLine
 append = char 'a' *> return Append
 
+change :: Parser InputLine
+change = char 'c' *> return Change
+
 parseInput :: Parser InputLine
 parseInput =
   choice [ printCurrent
@@ -74,4 +77,5 @@ parseInput =
          , write
          , quit
          , append
+         , change
          ]
