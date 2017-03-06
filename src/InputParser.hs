@@ -52,7 +52,7 @@ writeFilename = do
 runCommand :: Parser InputLine
 runCommand = do
   char '!'
-  cmd <- many1 (notChar ' ')
+  cmd <- many1 anyChar
   return (RunCommand cmd)
 
 quit :: Parser InputLine
