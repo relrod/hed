@@ -24,6 +24,13 @@ printLinesWithNumbers :: Parser InputLine
 printLinesWithNumbers =
   PrintLineRangeWithNumbers <$> (lineNumberRange <|> lineNumber') <* char 'n'
 
+deleteLines :: Parser InputLine
+deleteLines =
+  DeleteRange <$> (lineNumberRange <|> lineNumber') <* char 'd'
+
+deleteCurrent :: Parser InputLine
+deleteCurrent = char 'd' *> return Delete
+
 printCurrent :: Parser InputLine
 printCurrent = char 'p' *> return Print
 
@@ -57,8 +64,10 @@ append = char 'a' *> return Append
 parseInput :: Parser InputLine
 parseInput =
   choice [ printCurrent
+         , deleteCurrent
          , printLines
          , printLinesWithNumbers
+         , deleteLines
          , changeLine
          , writeFilename
          , runCommand

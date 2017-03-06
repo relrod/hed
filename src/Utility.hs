@@ -32,3 +32,8 @@ grabMultiline = grabMultiline' (S.fromList [])
       if inp == B.pack "."
         then return acc
         else grabMultiline' (acc S.|> inp)
+
+deleteSeqRange :: S.Seq a -> LineRange -> S.Seq a
+deleteSeqRange s (LineRange a b)
+  | b < a = s
+  | otherwise = deleteSeqRange (S.deleteAt a s) (LineRange a (b - 1))

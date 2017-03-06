@@ -15,6 +15,8 @@ data InputLine =
   | Number Int
   | Append
   | RunCommand String
+  | DeleteRange LineRange
+  | Delete
   deriving (Eq, Ord, Show)
 
 data FileInfo =

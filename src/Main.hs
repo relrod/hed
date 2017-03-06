@@ -50,6 +50,15 @@ loop file state = do
                          }
       loop file' state'
     Right (RunCommand cmd) -> callCommand cmd >> putStrLn "!"
+    Right (DeleteRange linerange) -> do
+      let contents' = U.deleteSeqRange (contents file) linerange
+          file' = file { contents = contents' }
+      loop file' state
+    Right Delete -> do
+      let line = LineRange (lineNumber state) (lineNumber state)
+          contents' = U.deleteSeqRange (contents file) line
+          file' = file { contents = contents' }
+      loop file' state
   loop file state
 
 initialState :: EditorState
