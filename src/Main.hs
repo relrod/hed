@@ -5,6 +5,7 @@ import qualified Data.ByteString.Char8 as B
 import Data.Monoid
 import qualified Data.Sequence as S
 import System.Environment (getArgs)
+import System.Exit
 import System.IO
 
 import InputParser
@@ -28,6 +29,7 @@ loop file = do
         Just f -> U.writeFile file >>= print
     Right (WriteFilename f) ->
       U.writeFile (file { filename = Just f }) >>= print
+    Right Quit -> exitSuccess -- TODO: ? on unsaved changes
   loop file
 
 main :: IO ()

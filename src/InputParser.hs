@@ -46,10 +46,14 @@ writeFilename = do
   filename <- many1 (notChar ' ')
   return (WriteFilename filename)
 
+quit :: Parser InputLine
+quit = char 'q' *> return Quit
+
 parseInput :: Parser InputLine
 parseInput =
   choice [ printLines
          , printLinesWithNumbers
          , writeFilename
          , write
+         , quit
          ]

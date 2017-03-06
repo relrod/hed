@@ -8,6 +8,7 @@ data InputLine =
   | PrintLineRangeWithNumbers Int Int
   | Write
   | WriteFilename String
+  | Quit
   deriving (Eq, Ord, Show)
 
 data FileInfo =
