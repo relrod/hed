@@ -19,11 +19,16 @@ loop file state = do
   case parseOnly parseInput (B.pack inp) of
     Left err -> putStrLn "?"
     Right (PrintLineRange (LineRange a b)) ->
-      mapM_ (\x -> B.putStrLn (S.index (contents file) x)) [a..b]
+      if a >= 0 && b < S.length (contents file)
+      then mapM_ (\x -> B.putStrLn (S.index (contents file) x)) [a..b]
+      else putStrLn "?"
     Right (PrintLineRangeWithNumbers (LineRange a b)) ->
-      mapM_ (\x ->
-               B.putStrLn ((B.pack . show $ x + 1) <>
-                           B.pack "\t" <> (S.index (contents file) x))) [a..b]
+      if a >= 0 && b < S.length (contents file)
+      then mapM_ (\x ->
+                   B.putStrLn ((B.pack . show $ x + 1) <>
+                               B.pack "\t" <> (S.index (contents file) x)))
+           [a..b]
+      else putStrLn "?"
     Right Print ->
       case S.lookup (lineNumber state) (contents file) of
         Nothing -> putStrLn "?" -- Should never happen, maybe?
@@ -43,9 +48,9 @@ loop file state = do
           loop file (state { lineNumber = n })
     Right Append -> do
       newLines <- U.grabMultiline
-      let contents' = U.insertSeqAt (contents file) (lineNumber state) newLines
+      let contents' = U.insertSeqAt (contents file) (lineNumber state + 1) newLines
           file' = file { contents = contents' }
-          state' = state { lineNumber = lineNumber state + S.length newLines - 1
+          state' = state { lineNumber = lineNumber state + S.length newLines
                          , editorMode = Command
                          }
       loop file' state'
