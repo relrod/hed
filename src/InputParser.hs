@@ -49,6 +49,12 @@ writeFilename = do
   filename <- many1 (notChar ' ')
   return (WriteFilename filename)
 
+runCommand :: Parser InputLine
+runCommand = do
+  char '!'
+  cmd <- many1 (notChar ' ')
+  return (RunCommand cmd)
+
 quit :: Parser InputLine
 quit = char 'q' *> return Quit
 
@@ -67,6 +73,7 @@ parseInput =
          , printLinesWithNumbers
          , changeLine
          , writeFilename
+         , runCommand
          , write
          , quit
          , append

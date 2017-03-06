@@ -7,6 +7,7 @@ import qualified Data.Sequence as S
 import System.Environment (getArgs)
 import System.Exit
 import System.IO
+import System.Process
 
 import InputParser
 import Types
@@ -48,6 +49,7 @@ loop file state = do
                          , editorMode = Command
                          }
       loop file' state'
+    Right (RunCommand cmd) -> callCommand cmd >> putStrLn "!"
   loop file state
 
 initialState :: EditorState

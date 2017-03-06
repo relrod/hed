@@ -12,6 +12,7 @@ data InputLine =
   | Quit
   | Number Int
   | Append
+  | RunCommand String
   deriving (Eq, Ord, Show)
 
 data FileInfo =
