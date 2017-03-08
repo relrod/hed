@@ -40,4 +40,5 @@ data EditorState =
   EditorState {
     editorMode :: EditorMode
   , lineNumber :: Int
+  , promptSave :: Bool
   } deriving (Eq, Ord, Show)

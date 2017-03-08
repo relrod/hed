@@ -40,10 +40,18 @@ loop file state = do
     Right Write ->
       case filename file of
         Nothing -> putStrLn "?"
-        Just f -> U.writeFile file >>= print
-    Right (WriteFilename f) ->
-      U.writeFile (file { filename = Just f }) >>= print
-    Right Quit -> exitSuccess -- TODO: ? on unsaved changes
+        Just f -> do
+          bytes <- U.writeFile file
+          print bytes
+          loop file (state { promptSave = False })
+    Right (WriteFilename f) -> do
+      bytes <- U.writeFile (file { filename = Just f })
+      print bytes
+      loop file (state { promptSave = False })
+    Right Quit ->
+      if promptSave state
+      then putStrLn "?" >> loop file (state { promptSave = False })
+      else exitSuccess
     Right (Number n) ->
       case S.lookup n (contents file) of
         Nothing -> putStrLn "?"
@@ -56,30 +64,33 @@ loop file state = do
           file' = file { contents = contents' }
           state' = state { lineNumber = lineNumber state + S.length newLines
                          , editorMode = Command
+                         , promptSave = True
                          }
       loop file' state'
     Right (RunCommand cmd) -> callCommand cmd >> putStrLn "!"
     Right (DeleteRange linerange) -> do
       let contents' = U.deleteSeqRange (contents file) linerange
           file' = file { contents = contents' }
-      loop file' state
+      loop file' (state { promptSave = True })
     Right Delete -> do
       let line = LineRange
                  (LineNumber $ lineNumber state)
                  (LineNumber $ lineNumber state)
           contents' = U.deleteSeqRange (contents file) line
           file' = file { contents = contents' }
-      loop file' state
+          state' = state { promptSave = True }
+      loop file' state'
     Right Change -> do
       let x = S.deleteAt (lineNumber state) (contents file)
       newLines <- U.grabMultiline
       let contents' = U.insertSeqAt x (lineNumber state) newLines
           file' = file { contents = contents' }
-      loop file' state
+          state' = state { promptSave = True }
+      loop file' state'
   loop file state
 
 initialState :: EditorState
-initialState = EditorState Command 0
+initialState = EditorState Command 0 False
 
 main :: IO ()
 main = do
