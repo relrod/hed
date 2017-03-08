@@ -1,3 +1,4 @@
+{-# LANGUAGE ViewPatterns #-}
 module Utility where
 
 import qualified Data.ByteString.Builder as BB
@@ -34,6 +35,16 @@ grabMultiline = grabMultiline' (S.fromList [])
         else grabMultiline' (acc S.|> inp)
 
 deleteSeqRange :: S.Seq a -> LineRange -> S.Seq a
-deleteSeqRange s (LineRange a b)
+deleteSeqRange s (numericLR s -> LineRange (LineNumber a) (LineNumber b))
   | b < a = s
-  | otherwise = deleteSeqRange (S.deleteAt a s) (LineRange a (b - 1))
+  | otherwise =
+    deleteSeqRange (S.deleteAt a s) (LineRange (LineNumber a) (LineNumber (b - 1)))
+
+numericLR :: S.Seq a -> LineRange -> LineRange
+numericLR f (LineRange EndOfFile n@(LineNumber _)) =
+  LineRange (LineNumber $ S.length f) n
+numericLR f (LineRange n@(LineNumber _) EndOfFile) =
+  LineRange n (LineNumber $ S.length f)
+numericLR f (LineRange EndOfFile EndOfFile) =
+  LineRange (LineNumber $ S.length f) (LineNumber $ S.length f)
+numericLR f (LineRange a b) = LineRange a b

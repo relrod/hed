@@ -3,7 +3,12 @@ module Types where
 import qualified Data.ByteString.Char8 as B
 import qualified Data.Sequence as S
 
-data LineRange = LineRange Int Int deriving (Eq, Ord, Show)
+data LineRange = LineRange LineNumber LineNumber deriving (Eq, Ord, Show)
+
+data LineNumber =
+    LineNumber Int
+  | EndOfFile
+  deriving (Eq, Ord, Show)
 
 data InputLine =
     PrintLineRange LineRange

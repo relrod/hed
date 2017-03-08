@@ -8,14 +8,14 @@ import Types
 lineNumber' :: Parser LineRange
 lineNumber' = do
   first <- read <$> many digit
-  return (LineRange (first - 1) (first - 1))
+  return (LineRange (LineNumber (first - 1)) (LineNumber (first - 1)))
 
 lineNumberRange :: Parser LineRange
 lineNumberRange = do
   first <- read <$> many digit
   char ','
   second <- read <$> many digit
-  return (LineRange (first - 1) (second - 1))
+  return (LineRange (LineNumber (first - 1)) (LineNumber (second - 1)))
 
 printLines :: Parser InputLine
 printLines = PrintLineRange <$> (lineNumberRange <|> lineNumber') <* char 'p'

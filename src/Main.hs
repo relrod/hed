@@ -1,3 +1,4 @@
+{-# LANGUAGE ViewPatterns #-}
 module Main where
 
 import Data.Attoparsec.ByteString.Char8
@@ -18,11 +19,14 @@ loop file state = do
   inp <- getLine
   case parseOnly parseInput (B.pack inp) of
     Left err -> putStrLn "?"
-    Right (PrintLineRange (LineRange a b)) ->
+    Right (PrintLineRange (U.numericLR (contents file) ->
+                           LineRange (LineNumber a) (LineNumber b))) ->
       if a >= 0 && b < S.length (contents file)
       then mapM_ (\x -> B.putStrLn (S.index (contents file) x)) [a..b]
       else putStrLn "?"
-    Right (PrintLineRangeWithNumbers (LineRange a b)) ->
+    Right (PrintLineRangeWithNumbers
+           (U.numericLR (contents file) ->
+            LineRange (LineNumber a) (LineNumber b))) ->
       if a >= 0 && b < S.length (contents file)
       then mapM_ (\x ->
                    B.putStrLn ((B.pack . show $ x + 1) <>
@@ -60,7 +64,9 @@ loop file state = do
           file' = file { contents = contents' }
       loop file' state
     Right Delete -> do
-      let line = LineRange (lineNumber state) (lineNumber state)
+      let line = LineRange
+                 (LineNumber $ lineNumber state)
+                 (LineNumber $ lineNumber state)
           contents' = U.deleteSeqRange (contents file) line
           file' = file { contents = contents' }
       loop file' state
