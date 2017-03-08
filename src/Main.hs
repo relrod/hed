@@ -16,25 +16,26 @@ import qualified Utility as U
 
 loop :: FileInfo -> EditorState -> IO ()
 loop file state = do
+  let cts = contents file
   inp <- getLine
   case parseOnly parseInput (B.pack inp) of
     Left err -> putStrLn "?"
-    Right (PrintLineRange (U.numericLR (contents file) ->
+    Right (PrintLineRange (U.numericLR cts ->
                            LineRange (LineNumber a) (LineNumber b))) ->
-      if a >= 0 && b < S.length (contents file)
-      then mapM_ (\x -> B.putStrLn (S.index (contents file) x)) [a..b]
+      if a >= 0 && b < S.length cts
+      then mapM_ (\x -> B.putStrLn (S.index cts x)) [a..b]
       else putStrLn "?"
     Right (PrintLineRangeWithNumbers
-           (U.numericLR (contents file) ->
+           (U.numericLR cts ->
             LineRange (LineNumber a) (LineNumber b))) ->
-      if a >= 0 && b < S.length (contents file)
+      if a >= 0 && b < S.length cts
       then mapM_ (\x ->
                    B.putStrLn ((B.pack . show $ x + 1) <>
-                               B.pack "\t" <> (S.index (contents file) x)))
+                               B.pack "\t" <> (S.index cts x)))
            [a..b]
       else putStrLn "?"
     Right Print ->
-      case S.lookup (lineNumber state) (contents file) of
+      case S.lookup (lineNumber state) cts of
         Nothing -> putStrLn "?" -- Should never happen, maybe?
         Just line -> B.putStrLn line
     Right Write ->
@@ -53,14 +54,14 @@ loop file state = do
       then putStrLn "?" >> loop file (state { promptSave = False })
       else exitSuccess
     Right (Number n) ->
-      case S.lookup n (contents file) of
+      case S.lookup n cts of
         Nothing -> putStrLn "?"
         Just line -> do
           B.putStrLn line
           loop file (state { lineNumber = n })
     Right Append -> do
       newLines <- U.grabMultiline
-      let contents' = U.insertSeqAt (contents file) (lineNumber state + 1) newLines
+      let contents' = U.insertSeqAt cts (lineNumber state + 1) newLines
           file' = file { contents = contents' }
           state' = state { lineNumber = lineNumber state + S.length newLines
                          , editorMode = Command
@@ -69,19 +70,19 @@ loop file state = do
       loop file' state'
     Right (RunCommand cmd) -> callCommand cmd >> putStrLn "!"
     Right (DeleteRange linerange) -> do
-      let contents' = U.deleteSeqRange (contents file) linerange
+      let contents' = U.deleteSeqRange cts linerange
           file' = file { contents = contents' }
       loop file' (state { promptSave = True })
     Right Delete -> do
       let line = LineRange
                  (LineNumber $ lineNumber state)
                  (LineNumber $ lineNumber state)
-          contents' = U.deleteSeqRange (contents file) line
+          contents' = U.deleteSeqRange cts line
           file' = file { contents = contents' }
           state' = state { promptSave = True }
       loop file' state'
     Right Change -> do
-      let x = S.deleteAt (lineNumber state) (contents file)
+      let x = S.deleteAt (lineNumber state) cts
       newLines <- U.grabMultiline
       let contents' = U.insertSeqAt x (lineNumber state) newLines
           file' = file { contents = contents' }
