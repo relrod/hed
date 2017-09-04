@@ -38,6 +38,12 @@ loop file state = do
       case S.lookup (lineNumber state) cts of
         Nothing -> putStrLn "?" -- Should never happen, maybe?
         Just line -> B.putStrLn line
+    Right PrintNumeric ->
+      case S.lookup (lineNumber state) cts of
+        Nothing -> putStrLn "?" -- Should never happen, maybe?
+        Just line ->
+          B.putStrLn ((B.pack . show $ lineNumber state + 1) <>
+                      B.pack "\t" <> line)
     Right Write ->
       case filename file of
         Nothing -> putStrLn "?"

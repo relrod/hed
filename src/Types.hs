@@ -14,6 +14,7 @@ data InputLine =
     PrintLineRange LineRange
   | PrintLineRangeWithNumbers LineRange
   | Print
+  | PrintNumeric
   | Write
   | WriteFilename String
   | Quit

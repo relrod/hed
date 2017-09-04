@@ -42,6 +42,9 @@ deleteCurrent = char 'd' *> return Delete
 printCurrent :: Parser InputLine
 printCurrent = char 'p' *> return Print
 
+printCurrentNumeric :: Parser InputLine
+printCurrentNumeric = char 'n' *> return PrintNumeric
+
 write :: Parser InputLine
 write = char 'w' *> return Write
 
@@ -75,15 +78,16 @@ change = char 'c' *> return Change
 parseInput :: Parser InputLine
 parseInput =
   choice [ printCurrent
+         , printCurrentNumeric
          , deleteCurrent
          , printLines
          , printLinesWithNumbers
          , deleteLines
-         , changeLine
          , writeFilename
          , runCommand
          , write
          , quit
          , append
          , change
+         , changeLine
          ]

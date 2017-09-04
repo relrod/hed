@@ -50,5 +50,5 @@ numericLR f (LineRange EndOfFile EndOfFile) =
 numericLR f (LineRange a b) = LineRange a b
 
 numericL :: S.Seq a -> LineNumber -> Int
-numericL f (LineNumber n) = n - 1
+numericL f (LineNumber n) = n
 numericL f EndOfFile = S.length f - 1
