@@ -5,17 +5,25 @@ import Data.Attoparsec.ByteString.Char8
 import qualified Data.ByteString.Char8 as B
 import Types
 
+lineNumberP :: Parser LineNumber
+lineNumberP = choice [lineEOF, lineNumber]
+  where
+    lineNumber = do
+      n <- read <$> many digit
+      return (LineNumber (n - 1))
+    lineEOF = char '$' >> return EndOfFile
+
 lineNumber' :: Parser LineRange
 lineNumber' = do
-  first <- read <$> many digit
-  return (LineRange (LineNumber (first - 1)) (LineNumber (first - 1)))
+  first <- lineNumberP
+  return (LineRange first first)
 
 lineNumberRange :: Parser LineRange
 lineNumberRange = do
-  first <- read <$> many digit
+  first <- lineNumberP
   char ','
-  second <- read <$> many digit
-  return (LineRange (LineNumber (first - 1)) (LineNumber (second - 1)))
+  second <- lineNumberP
+  return (LineRange first second)
 
 printLines :: Parser InputLine
 printLines = PrintLineRange <$> (lineNumberRange <|> lineNumber') <* char 'p'
@@ -55,8 +63,8 @@ quit = char 'q' *> return Quit
 
 changeLine :: Parser InputLine
 changeLine = do
-  nr <- read <$> many1 digit
-  return (Number (nr - 1))
+  nr <- lineNumberP
+  return (Number nr)
 
 append :: Parser InputLine
 append = char 'a' *> return Append

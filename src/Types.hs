@@ -17,7 +17,7 @@ data InputLine =
   | Write
   | WriteFilename String
   | Quit
-  | Number Int
+  | Number LineNumber
   | Append
   | RunCommand String
   | DeleteRange LineRange

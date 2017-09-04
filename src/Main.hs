@@ -53,7 +53,7 @@ loop file state = do
       if promptSave state
       then putStrLn "?" >> loop file (state { promptSave = False })
       else exitSuccess
-    Right (Number n) ->
+    Right (Number (U.numericL cts -> n)) ->
       case S.lookup n cts of
         Nothing -> putStrLn "?"
         Just line -> do

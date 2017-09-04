@@ -42,9 +42,13 @@ deleteSeqRange s (numericLR s -> LineRange (LineNumber a) (LineNumber b))
 
 numericLR :: S.Seq a -> LineRange -> LineRange
 numericLR f (LineRange EndOfFile n@(LineNumber _)) =
-  LineRange (LineNumber $ S.length f) n
+  LineRange (LineNumber $ S.length f - 1) n
 numericLR f (LineRange n@(LineNumber _) EndOfFile) =
-  LineRange n (LineNumber $ S.length f)
+  LineRange n (LineNumber $ S.length f - 1)
 numericLR f (LineRange EndOfFile EndOfFile) =
-  LineRange (LineNumber $ S.length f) (LineNumber $ S.length f)
+  LineRange (LineNumber $ S.length f - 1) (LineNumber $ S.length f - 1)
 numericLR f (LineRange a b) = LineRange a b
+
+numericL :: S.Seq a -> LineNumber -> Int
+numericL f (LineNumber n) = n - 1
+numericL f EndOfFile = S.length f - 1
